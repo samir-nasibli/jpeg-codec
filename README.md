@@ -1,4 +1,4 @@
-# My own JPEG encoder/decoder
+# Simple JPEG encoder/decoder
 
 I implemented application which perform the following:
 - reads JPEG image file as input;

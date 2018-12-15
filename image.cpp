@@ -170,7 +170,7 @@ void Image::invert()
     {
         for (size_t j = 0; j!= it2; j+=1)
         {
-            m_bitmapData[i][j] = 256 - m_bitmapData[i][j];
+           m_bitmapData[i][j] = 255 - m_bitmapData[i][j];
 
         }
     }
