@@ -44,6 +44,8 @@ public:
     // inverts pixels of image
     void invert();
 
+    void parallelInvert();
+
 
 private:
     std::shared_ptr<::jpeg_error_mgr> m_errorMgr;

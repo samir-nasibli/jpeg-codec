@@ -8,6 +8,11 @@
 #include <vector>
 #include <iostream>
 
+//#include "tbb/parallel_for.h"
+//#include "tbb/blocked_range2d.h"
+
+//#include <tbb/tick_count.h>
+
 
 namespace jpegImage
 {
@@ -166,16 +171,42 @@ void Image::invert()
     size_t it = m_bitmapData.size();
     size_t it2 = m_bitmapData[0].size();
     
+    //tbb::tick_count t0 = tbb::tick_count::now();
+
     for (size_t i = 0; i!= it; ++i)
     {
-        for (size_t j = 0; j!= it2; j+=1)
+        for (size_t j = 0; j!= it2; ++j)
         {
-           m_bitmapData[i][j] = 255 - m_bitmapData[i][j];
+            m_bitmapData[i][j] = 255 - m_bitmapData[i][j];
 
         }
     }
+    //tbb::tick_count t1 = tbb::tick_count::now();
+    //std::cout << "/wout = " << (t1-t0).seconds() <<std::endl;
+
 
 }
 
+/*
+void Image::parallelInvert() {
+    size_t m = m_bitmapData.size();
+    size_t n = m_bitmapData[0].size();
 
+    tbb::tick_count t0 = tbb::tick_count::now();
+
+    tbb::parallel_for(
+        tbb::blocked_range2d<size_t>(0,m,2,0,n,4),
+        [&] (tbb::blocked_range2d<size_t> r) {
+            for (size_t i = r.rows().begin(); i != r.rows().end(); ++i )
+                for (size_t j = r.cols().begin(); j != r.cols().end(); ++j )
+                {
+                    m_bitmapData[i][j] = 255 - m_bitmapData[i][j];
+                }
+        });
+
+    tbb::tick_count t1 = tbb::tick_count::now();
+    std::cout << "tbb = " << (t1-t0).seconds() <<std::endl;
+}
+
+*/
 } // jpegImage namespace
