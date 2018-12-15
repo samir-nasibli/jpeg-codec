@@ -24,15 +24,15 @@ Donwload this repository and run make file. It generates two console programs: `
 
 Examples:
 ```
-invert cars.jpg invCars 34
+invert cars.jpeg invertCars.jpeg 34
 ```
 ```
-compress cars.jpeg comprCars 24
+compress cars.jpeg comprCars.jpeg 24
 ```
 
 Original image            |  Inverted image
 :-------------------------:|:-------------------------:
-![](cars.jpeg)  |  ![](invCars)
+![](cars.jpeg)  |  ![](invertCars.jpeg)
 
 
 
