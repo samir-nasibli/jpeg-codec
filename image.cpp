@@ -183,6 +183,7 @@ void Image::printImageProperties() const
 }
 
 
+/*
 void Image::invert()
 {  
     tbb::tick_count t0 = tbb::tick_count::now();
@@ -198,6 +199,7 @@ void Image::invert()
     std::cout<<"Invert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
     
 }
+*/
 
 void Image::parallelInvert() {
     

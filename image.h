@@ -45,8 +45,9 @@ public:
     void printImageProperties() const; 
 
     // inverts pixels of image
-    void invert();
-
+    //void invert();
+    
+    // inverts pixels of image
     void parallelInvert();
 
 

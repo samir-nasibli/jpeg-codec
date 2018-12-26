@@ -31,13 +31,13 @@ int main( int argc, char* argv[] )
         }
         catch(std::invalid_argument& e){
             // if no conversion could be performed
-            std::cout << "No conversion could be performed\n";
+            std::cout << "No conversion could be performed. No correct quality number specified\n";
             printTemplateForCorrectRequest();
             return 1;
         }
         catch(std::out_of_range& e){
             // if the converted value would fall out of the range of the result type 
-            std::cout << "The converted value would fall out of the range of the result type\n";
+            std::cout << "The converted value fall out of the range of the result type. No correct quality number specified\n";
             printTemplateForCorrectRequest();
             return 1;
         }
