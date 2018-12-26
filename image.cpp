@@ -161,10 +161,7 @@ void Image::save( const std::string& fileName, int quality ) const
 
 
     while (compressInfo->next_scanline < compressInfo->image_height) {
-    /* jpeg_write_scanlines expects an array of pointers to scanlines.
-     * Here the array is only one element long, but you could pass
-     * more than one scanline at a time if that's more convenient.
-     */
+
         row_pointer[0] = const_cast<::JSAMPROW> (& m_bitmapData[compressInfo->next_scanline * row_stride]);
         ::jpeg_write_scanlines(compressInfo.get(), row_pointer, 1);
 
