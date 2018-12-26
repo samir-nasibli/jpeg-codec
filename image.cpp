@@ -8,10 +8,11 @@
 #include <vector>
 #include <iostream>
 
-//#include "tbb/parallel_for.h"
-//#include "tbb/blocked_range2d.h"
+#include "tbb/parallel_for.h"
+#include "tbb/blocked_range2d.h"
+#include "tbb/task_scheduler_init.h"
 
-//#include <tbb/tick_count.h>
+#include <tbb/tick_count.h>
 
 
 namespace jpegImage
@@ -81,15 +82,19 @@ Image::Image( const std::string& fileName )
     size_t row_stride = m_width * m_pixelSize;
 
     m_bitmapData.clear();
-    m_bitmapData.reserve( m_height );
 
+    m_bitmapData.resize( m_pixelSize * m_width * m_height );
+
+  
+    uint8_t * ptr = m_bitmapData.data();
+
+    
     while ( decompressInfo->output_scanline < m_height )
     {
-        std::vector<uint8_t> vec(row_stride);
-        uint8_t* p = vec.data();
-        ::jpeg_read_scanlines( decompressInfo.get(), &p, 1 );
-        m_bitmapData.push_back( vec );
+        ::jpeg_read_scanlines( decompressInfo.get(), &ptr, 1 );
+        ptr +=row_stride;
     }
+
     ::jpeg_finish_decompress( decompressInfo.get() );
 }
 
@@ -107,6 +112,7 @@ Image::Image( const Image& rhs )
 Image::~Image()
 {
 }
+
 
 void Image::save( const std::string& fileName, int quality ) const
 {
@@ -147,66 +153,80 @@ void Image::save( const std::string& fileName, int quality ) const
     ::jpeg_set_defaults( compressInfo.get() );
     ::jpeg_set_quality( compressInfo.get(), quality, TRUE );
     ::jpeg_start_compress( compressInfo.get(), TRUE);
-    for ( auto const& vecLine : m_bitmapData )
-    {
-        ::JSAMPROW rowPtr[1];
-        // Casting const-ness away here because the jpeglib
-        // call expects a non-const pointer. It presumably
-        // doesn't modify our data.
-        rowPtr[0] = const_cast<::JSAMPROW>( vecLine.data() );
-        ::jpeg_write_scanlines(
-            compressInfo.get(),
-            rowPtr,
-            1
-            );
+
+
+    size_t row_stride = m_width * m_pixelSize;
+
+    ::JSAMPROW row_pointer[1]; /* pointer to JSAMPLE row[s] */
+
+
+    while (compressInfo->next_scanline < compressInfo->image_height) {
+    /* jpeg_write_scanlines expects an array of pointers to scanlines.
+     * Here the array is only one element long, but you could pass
+     * more than one scanline at a time if that's more convenient.
+     */
+        row_pointer[0] = const_cast<::JSAMPROW> (& m_bitmapData[compressInfo->next_scanline * row_stride]);
+        ::jpeg_write_scanlines(compressInfo.get(), row_pointer, 1);
+
     }
+    
     ::jpeg_finish_compress( compressInfo.get() );
     fclose( outfile );
     std::cout << fileName <<" image has been successfully saved " <<std::endl;
 }
 
 
-void Image::invert()
+// prints some image properties: height, width and pixel size
+void Image::printImageProperties() const
 {
-    size_t it = m_bitmapData.size();
-    size_t it2 = m_bitmapData[0].size();
-    
-    //tbb::tick_count t0 = tbb::tick_count::now();
-
-    for (size_t i = 0; i!= it; ++i)
-    {
-        for (size_t j = 0; j!= it2; ++j)
-        {
-            m_bitmapData[i][j] = 255 - m_bitmapData[i][j];
-
-        }
-    }
-    //tbb::tick_count t1 = tbb::tick_count::now();
-    //std::cout << "/wout = " << (t1-t0).seconds() <<std::endl;
-
-
+    std::cout << "\nImage height: " << m_height
+            << "\nImage width : " << m_width
+            << "\nImage px sz : " << m_pixelSize
+            << std::endl;
 }
 
-/*
+
+void Image::invert()
+{  
+    tbb::tick_count t0 = tbb::tick_count::now();
+
+    for (std::vector<uint8_t>::iterator it = m_bitmapData.begin(); it != m_bitmapData.end(); ++it)
+    {
+        *it = 255 - *it;
+
+    }
+
+    // Print time results
+    tbb::tick_count t1 = tbb::tick_count::now();
+    std::cout<<"Invert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
+    
+}
+
 void Image::parallelInvert() {
+    
     size_t m = m_bitmapData.size();
-    size_t n = m_bitmapData[0].size();
+
+    size_t p = tbb::task_scheduler_init::default_num_threads();
+
+    // The computation 2*n/p-1 here is because in TBB, 
+    // grainsize is not a minimal size of a possible 
+    // sub-range but the threshold used to decide whether to split.
+    size_t grainsize = 2*m/p-1;
 
     tbb::tick_count t0 = tbb::tick_count::now();
 
     tbb::parallel_for(
-        tbb::blocked_range2d<size_t>(0,m,2,0,n,4),
-        [&] (tbb::blocked_range2d<size_t> r) {
-            for (size_t i = r.rows().begin(); i != r.rows().end(); ++i )
-                for (size_t j = r.cols().begin(); j != r.cols().end(); ++j )
+        tbb::blocked_range<size_t>(0,m,grainsize),
+        [&] (tbb::blocked_range<size_t> r) {
+            for (size_t i = r.begin(); i != r.end(); ++i )
                 {
-                    m_bitmapData[i][j] = 255 - m_bitmapData[i][j];
+                    m_bitmapData[i] = 255 - m_bitmapData[i];
                 }
         });
 
+    // Print time results
     tbb::tick_count t1 = tbb::tick_count::now();
-    std::cout << "tbb = " << (t1-t0).seconds() <<std::endl;
-}
+    std::cout<<"Invert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
 
-*/
+}
 } // jpegImage namespace

@@ -41,6 +41,9 @@ public:
     size_t getWidth()     const { return m_width;  }
     size_t getPixelSize() const { return m_pixelSize; }
 
+    // prints some image properties: height, width and pixel size
+    void printImageProperties() const; 
+
     // inverts pixels of image
     void invert();
 
@@ -49,7 +52,7 @@ public:
 
 private:
     std::shared_ptr<::jpeg_error_mgr> m_errorMgr;
-    std::vector<std::vector<uint8_t>> m_bitmapData;
+    std::vector<uint8_t>              m_bitmapData;
     size_t                            m_width;
     size_t                            m_height;
     size_t                            m_pixelSize;

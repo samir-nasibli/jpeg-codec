@@ -1,10 +1,10 @@
 all: invert compress
 
 invert: image.h image.cpp invert.cpp 
-	g++ image.cpp image.h invert.cpp -o invert -ljpeg
+	g++ -std=c++11 image.cpp image.h invert.cpp -o invert -ljpeg -ltbb
 
 compress: image.h image.cpp compress.cpp 
-	g++ image.cpp image.h compress.cpp -o compress -ljpeg
+	g++ -std=c++11 image.cpp image.h compress.cpp -o compress -ljpeg -ltbb
 
 clean:
 	rm invert compress
