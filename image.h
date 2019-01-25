@@ -44,13 +44,13 @@ public:
     void printImageProperties() const; 
 
     // inverts pixels of image (no multithread)
-    //void invert();
+    void invert();
     
     // inverts pixels of image (TBB)
     void parallelInvert();
 
     // inverts pixels of image (uses stl thread)
-    //void stdInvert();
+    void stdInvert();
 
 private:
     std::shared_ptr<::jpeg_error_mgr> m_errorMgr;

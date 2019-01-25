@@ -177,7 +177,6 @@ void Image::printImageProperties() const
             << std::endl;
 }
 
-/*
 void Image::invert()
 {  
     tbb::tick_count t0 = tbb::tick_count::now();
@@ -191,7 +190,6 @@ void Image::invert()
     tbb::tick_count t1 = tbb::tick_count::now();
     std::cout<<"invert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
 }
-*/
 
 void Image::parallelInvert() {
     
@@ -220,7 +218,6 @@ void Image::parallelInvert() {
     std::cout<<"parallelInvert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
 }
 
-/*
 void Image::stdInvert()
 {
     typedef std::vector<uint8_t> container;
@@ -266,5 +263,4 @@ void Image::stdInvert()
     tbb::tick_count t1 = tbb::tick_count::now();
     std::cout<<"stdInvert succesuflly:\t" << (t1-t0).seconds()<< " seconds"<<std::endl;
 }
-*/
 } // jpegImage namespace
