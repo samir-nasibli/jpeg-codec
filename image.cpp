@@ -86,10 +86,8 @@ Image::Image( const std::string& fileName )
 
     m_bitmapData.resize( m_pixelSize * m_width * m_height );
 
-  
     uint8_t * ptr = m_bitmapData.data();
 
-    
     while ( decompressInfo->output_scanline < m_height )
     {
         ::jpeg_read_scanlines( decompressInfo.get(), &ptr, 1 );
@@ -154,11 +152,9 @@ void Image::save( const std::string& fileName, int quality ) const
     ::jpeg_set_quality( compressInfo.get(), quality, TRUE );
     ::jpeg_start_compress( compressInfo.get(), TRUE);
 
-
     size_t row_stride = m_width * m_pixelSize;
 
     ::JSAMPROW row_pointer[1]; /* pointer to JSAMPLE row[s] */
-
 
     while (compressInfo->next_scanline < compressInfo->image_height) {
 
@@ -189,7 +185,6 @@ void Image::invert()
     for (std::vector<uint8_t>::iterator it = m_bitmapData.begin(); it != m_bitmapData.end(); ++it)
     {
         *it = 255 - *it;
-
     }
 
     // Print time results
@@ -223,7 +218,6 @@ void Image::parallelInvert() {
     // Print time results
     tbb::tick_count t1 = tbb::tick_count::now();
     std::cout<<"parallelInvert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
-
 }
 
 /*
