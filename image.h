@@ -36,7 +36,6 @@ public:
     // Quality's usable values are 0-100
     void save( const std::string& fileName, int quality = 95 ) const;
 
-
     size_t getHeight()    const { return m_height; }
     size_t getWidth()     const { return m_width;  }
     size_t getPixelSize() const { return m_pixelSize; }
@@ -44,12 +43,14 @@ public:
     // prints some image properties: height, width and pixel size
     void printImageProperties() const; 
 
-    // inverts pixels of image
+    // inverts pixels of image (no multithread)
     //void invert();
     
-    // inverts pixels of image
+    // inverts pixels of image (TBB)
     void parallelInvert();
 
+    // inverts pixels of image (uses stl thread)
+    //void stdInvert();
 
 private:
     std::shared_ptr<::jpeg_error_mgr> m_errorMgr;

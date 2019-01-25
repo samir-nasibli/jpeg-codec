@@ -47,11 +47,23 @@ int main( int argc, char* argv[] )
         // Constructor expects a filename to load:
         jpegImage::Image imgOriginal(nameOfOrig);
 
+        // for time tests
+        //jpegImage::Image copyOfOrig(imgOriginal);
+
+        // for time tests
+        //jpegImage::Image copyOfOrigForStdInvert(imgOriginal);
+
         // Print some image info
         imgOriginal.printImageProperties();
 
         // image invert
         imgOriginal.parallelInvert();
+
+        // for time tests
+        //copyOfOrig.invert();
+
+        // for time tests
+        //copyOfOrigForStdInvert.stdInvert();
 
         // Save the image with new quality number
         imgOriginal.save(nameOfSavedImg, QualityNumber);

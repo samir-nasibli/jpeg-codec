@@ -113,7 +113,6 @@ Image::~Image()
 {
 }
 
-
 void Image::save( const std::string& fileName, int quality ) const
 {
     if ( quality < 0 )
@@ -172,7 +171,6 @@ void Image::save( const std::string& fileName, int quality ) const
     std::cout << fileName <<" image has been successfully saved " <<std::endl;
 }
 
-
 // prints some image properties: height, width and pixel size
 void Image::printImageProperties() const
 {
@@ -181,7 +179,6 @@ void Image::printImageProperties() const
             << "\nImage px sz : " << m_pixelSize
             << std::endl;
 }
-
 
 /*
 void Image::invert()
@@ -196,8 +193,7 @@ void Image::invert()
 
     // Print time results
     tbb::tick_count t1 = tbb::tick_count::now();
-    std::cout<<"Invert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
-    
+    std::cout<<"invert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
 }
 */
 
@@ -225,7 +221,55 @@ void Image::parallelInvert() {
 
     // Print time results
     tbb::tick_count t1 = tbb::tick_count::now();
-    std::cout<<"Invert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
+    std::cout<<"parallelInvert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
 
 }
+
+/*
+void Image::stdInvert()
+{
+    typedef std::vector<uint8_t> container;
+    typedef container::iterator iter;
+
+    auto loop = [] (iter begin, iter end)
+    {
+        for(auto it = begin; it != end; ++it)
+            *it = 255 - *it;
+    };
+
+    tbb::tick_count t0 = tbb::tick_count::now();
+
+    // parallel
+    size_t m = m_bitmapData.size();
+    
+    //size_t threadsNumber = (m > 5) ? 5 : 1;
+
+    //temporary using tbb func: number of threads
+    size_t threadsNumber = tbb::task_scheduler_init::default_num_threads();
+
+    size_t grainsize = m/threadsNumber;
+
+    
+    std::vector<std::thread> threads(threadsNumber);
+
+    auto loop_iter = std::begin(m_bitmapData);
+    
+    for(auto it = std::begin(threads); it != std::end(threads) - 1; ++it)
+    {
+        *it = std::thread(loop, loop_iter, loop_iter + grainsize);
+        loop_iter += grainsize;
+    }
+    
+    threads.back() = std::thread(loop, loop_iter, std::end(m_bitmapData));
+
+    for(auto& i : threads)
+    {
+        i.join();
+    }
+
+    // Print time results
+    tbb::tick_count t1 = tbb::tick_count::now();
+    std::cout<<"stdInvert succesuflly:\t" << (t1-t0).seconds()<< " seconds"<<std::endl;
+}
+*/
 } // jpegImage namespace
