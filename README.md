@@ -44,6 +44,8 @@ __27.12.2018__:
 * some exceptions are handled (full description will be added later)
 * other (full description will be added later) 
 
+__25.01.2019__:
+* ```stdInvert()``` was added, that uses std::threads for multithreading.
 
 ## To-dos
 * Write Google Tests
