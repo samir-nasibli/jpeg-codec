@@ -195,7 +195,7 @@ void Image::parallelInvert() {
     
     size_t m = m_bitmapData.size();
 
-    size_t p = tbb::task_scheduler_init::default_num_threads();
+    size_t p = std::thread::hardware_concurrency();
 
     // The computation 2*n/p-1 here is because in TBB, 
     // grainsize is not a minimal size of a possible 
