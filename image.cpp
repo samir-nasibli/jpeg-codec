@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 #include "tbb/parallel_for.h"
 #include "tbb/blocked_range2d.h"
@@ -179,7 +180,7 @@ void Image::printImageProperties() const
 
 void Image::invert()
 {  
-    tbb::tick_count t0 = tbb::tick_count::now();
+    auto t_begin = std::chrono::high_resolution_clock::now();
 
     for (std::vector<uint8_t>::iterator it = m_bitmapData.begin(); it != m_bitmapData.end(); ++it)
     {
@@ -187,8 +188,10 @@ void Image::invert()
     }
 
     // Print time results
-    tbb::tick_count t1 = tbb::tick_count::now();
-    std::cout<<"invert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
+    auto t_end = std::chrono::high_resolution_clock::now();
+    std::cout << "invert succesuflly:\t"
+            <<std::chrono::duration_cast<std::chrono::nanoseconds>(t_end - t_begin).count()
+            <<" ns"<<std::endl;
 }
 
 void Image::parallelInvert() {
@@ -202,7 +205,7 @@ void Image::parallelInvert() {
     // sub-range but the threshold used to decide whether to split.
     size_t grainsize = 2*m/p-1;
 
-    tbb::tick_count t0 = tbb::tick_count::now();
+    auto t_begin = std::chrono::high_resolution_clock::now();
 
     tbb::parallel_for(
         tbb::blocked_range<size_t>(0,m,grainsize),
@@ -214,8 +217,10 @@ void Image::parallelInvert() {
         });
 
     // Print time results
-    tbb::tick_count t1 = tbb::tick_count::now();
-    std::cout<<"parallelInvert succesuflly: " << (t1-t0).seconds()<< " seconds"<<std::endl;
+    auto t_end = std::chrono::high_resolution_clock::now();
+    std::cout << "parallelInvert succesuflly:\t"
+            <<std::chrono::duration_cast<std::chrono::nanoseconds>(t_end - t_begin).count()
+            <<" ns"<<std::endl;
 }
 
 void Image::stdInvert()
@@ -229,7 +234,7 @@ void Image::stdInvert()
             *it = 255 - *it;
     };
 
-    tbb::tick_count t0 = tbb::tick_count::now();
+    auto t_begin = std::chrono::high_resolution_clock::now();
 
     // parallel
     size_t m = m_bitmapData.size();
@@ -260,7 +265,9 @@ void Image::stdInvert()
     }
 
     // Print time results
-    tbb::tick_count t1 = tbb::tick_count::now();
-    std::cout<<"stdInvert succesuflly:\t" << (t1-t0).seconds()<< " seconds"<<std::endl;
+    auto t_end = std::chrono::high_resolution_clock::now();
+    std::cout << "stdInvert succesuflly:\t"
+            <<std::chrono::duration_cast<std::chrono::nanoseconds>(t_end - t_begin).count()
+            <<" ns"<<std::endl;
 }
 } // jpegImage namespace
